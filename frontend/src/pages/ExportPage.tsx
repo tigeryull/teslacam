@@ -8,7 +8,7 @@ export default function ExportPage() {
 
   const refreshTasks = async () => {
     try {
-      const res = await api.listTasks()
+      const res = await api.listTasks() as { tasks: ExportTask[] }
       setTasks(res.tasks || [])
     } catch (e) {
       console.error(e)

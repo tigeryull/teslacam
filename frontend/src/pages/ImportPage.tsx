@@ -12,8 +12,8 @@ export default function ImportPage() {
     if (!folderPath.trim()) return
     setLoading(true)
     try {
-      const res = await api.scanFolder(folderPath)
-      setResult({ imported: res.imported, skipped: res.skipped, duplicates: res.duplicates } as any)
+      const res = await api.scanFolder(folderPath) as { imported: number; skipped: number; duplicates: number; videos: Video[] }
+      setResult({ imported: res.imported, skipped: res.skipped, duplicates: res.duplicates })
       setVideos(res.videos || [])
     } catch (e) {
       alert(`导入失败: ${e}`)

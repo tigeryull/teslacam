@@ -1,20 +1,18 @@
 import { useState, useEffect } from 'react'
 import { api } from '../utils/api'
-import type { Video, VideoGroup } from '../types'
+import type { VideoGroup } from '../types'
 
 export default function TimelinePage() {
-  const [videos, setVideos] = useState<Video[]>([])
   const [groups, setGroups] = useState<VideoGroup>({})
   const [selectedDate, setSelectedDate] = useState<string | null>(null)
-  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     api.listVideos().then((res: any) => {
-      setVideos(res.videos || [])
-      setGroups(res.groups || {})
-      const dates = Object.keys(res.groups || {})
+      const g = res.groups || {}
+      setGroups(g)
+      const dates = Object.keys(g)
       if (dates.length > 0) setSelectedDate(dates[0])
-    }).catch(console.error).finally(() => setLoading(false))
+    }).catch(console.error)
   }, [])
 
   const selectedVideos = selectedDate ? (groups[selectedDate] || []) : []
