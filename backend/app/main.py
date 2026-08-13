@@ -4,7 +4,6 @@ from fastapi.staticfiles import StaticFiles
 from pathlib import Path
 import sys
 
-# 添加项目根目录到 path
 project_root = Path(__file__).parent.parent
 sys.path.insert(0, str(project_root))
 
@@ -13,7 +12,7 @@ from app.routes import folders, videos, edit
 app = FastAPI(
     title="Teslacam API",
     description="车载记录仪视频管理 & 编辑系统",
-    version="0.1.0"
+    version="0.2.0"
 )
 
 app.add_middleware(
@@ -24,12 +23,10 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# 注册路由
 app.include_router(folders.router)
 app.include_router(videos.router)
 app.include_router(edit.router)
 
-# 静态文件服务（前端构建产物）
 frontend_dist = project_root / "frontend" / "dist"
 if frontend_dist.exists():
     app.mount("/", StaticFiles(directory=str(frontend_dist), html=True), name="frontend")
@@ -37,7 +34,7 @@ if frontend_dist.exists():
 
 @app.get("/api/health")
 async def health():
-    return {"status": "ok", "service": "teslacam"}
+    return {"status": "ok", "service": "teslacam", "version": "0.2.0"}
 
 
 if __name__ == "__main__":
