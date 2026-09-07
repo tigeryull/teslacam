@@ -1,0 +1,25 @@
+在你的服务器上执行以下命令来诊断和修复 SSH 问题：
+
+1. 检查 fail2ban 是否封禁了我的 IP（104.28.222.47）：
+   fail2ban-client status 2>/dev/null
+   fail2ban-client get sshd agitated 2>/dev/null
+
+2. 如果被封禁，解封：
+   fail2ban-client unban --all 2>/dev/null
+   # 或直接移除特定 IP
+   iptables -D INPUT -s 104.28.222.47 -j DROP 2>/dev/null
+
+3. 检查 SSH 配置：
+   grep -E "^Port|^PubkeyAuthentication|^PermitRootLogin|^AllowUsers" /etc/ssh/sshd_config
+
+4. 确保 SSH 允许 root 登录（如果之前禁止了）：
+   sed -i 's/^PermitRootLogin.*/PermitRootLogin prohibit-password/' /etc/ssh/sshd_config
+   # 或如果是 no，改为：
+   sed -i 's/^PermitRootLogin no/PermitRootLogin prohibit-password/' /etc/ssh/sshd_config
+
+5. 重启 SSH：
+   systemctl restart sshd
+
+6. 检查安全组（阿里云）：
+   # 在阿里云控制台 → ECS → 实例 → 安全组 → 添加入方向规则
+   # 允许 104.28.222.47/32 访问 22 端口
