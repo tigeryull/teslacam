@@ -1,7 +1,9 @@
-const API_BASE = ''
+// 后端 API 地址，本地开发用空字符串，线上部署填后端域名
+const BACKEND_URL = ''
 
 async function request<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
-  const res = await fetch(`${API_BASE}${endpoint}`, {
+  const url = BACKEND_URL ? `${BACKEND_URL}${endpoint}` : endpoint
+  const res = await fetch(url, {
     headers: { 'Content-Type': 'application/json' },
     ...options,
   })
@@ -13,12 +15,13 @@ async function request<T>(endpoint: string, options: RequestInit = {}): Promise<
 }
 
 export const api = {
-  // 导入管理 - 浏览器文件导入
+  // 导入管理 - 浏览器文件上传（多文件）
   importFiles: async (files: File[], folderName: string = '') => {
     const form = new FormData()
     files.forEach(f => form.append('files', f))
     form.append('folder_name', folderName)
-    const res = await fetch('/api/edit/upload', { method: 'POST', body: form })
+    const url = BACKEND_URL ? `${BACKEND_URL}/api/edit/upload` : '/api/edit/upload'
+    const res = await fetch(url, { method: 'POST', body: form })
     if (!res.ok) {
       const err = await res.json().catch(() => ({ detail: res.statusText }))
       throw new Error(err.detail || `HTTP ${res.status}`)
@@ -35,7 +38,8 @@ export const api = {
     request(`/videos?date_filter=${dateFilter || ''}&limit=${limit}`),
 
   // 视频流
-  getVideoStream: (id: string) => `${API_BASE}/api/videos/${id}/stream`,
+  getVideoStream: (id: string) =>
+    `${BACKEND_URL ? BACKEND_URL : ''}/api/videos/${id}/stream`,
 
   // 视频
   getVideo: (id: string) => request(`/videos/${id}`),
